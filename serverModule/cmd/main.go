@@ -10,11 +10,21 @@ import (
 func main() {
 	r := gin.Default()
 
-	// Instruct browsers to not cache
+	reactAppDomain := "http://localhost:3000" //os.Getenv("REACT_APP_DOMAIN")
+
+	// Allow requests from your React app's origin
 	r.Use(func(c *gin.Context) {
-		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
-		c.Header("Pragma", "no-cache")
-		c.Header("Expires", "0")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", reactAppDomain)
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+		// Handle preflight OPTIONS request
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
 		c.Next()
 	})
 
@@ -25,7 +35,6 @@ func main() {
 		sessionGroup.POST("/:session", routes.GetSession)
 		sessionGroup.GET("/setuserid", routes.SetUserId)
 		sessionGroup.GET("/connect", routes.ConnectSession)
-		sessionGroup.GET("/ws", routes.WebSocketExample) // Example websocket connection
 	}
 
 	r.Static("/static", "../static")

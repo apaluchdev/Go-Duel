@@ -24,6 +24,8 @@ type Session struct {
 
 type PlayerUpdate struct {
 	Score int16
+	X     int16
+	Y     int16
 }
 
 func (s *Session) GetPlayerScores() map[uuid.UUID]int16 {
@@ -54,7 +56,7 @@ func HandleUserSession(conn *websocket.Conn, s *Session, userId uuid.UUID) {
 			continue
 		}
 
-		fmt.Printf("Received new score: %v\n", message.Score)
+		fmt.Printf("Received new score: %v\nx: %v\ny: %v\n", message.Score, message.X, message.Y)
 		s.PlayerScores[userId] = message.Score
 
 		// Example of writing back a message

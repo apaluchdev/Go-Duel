@@ -14,6 +14,10 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		// Allow all connections | TODO Make specific for web app
+		return true
+	},
 }
 
 func GetSession(c *gin.Context) {
@@ -28,7 +32,7 @@ func GetSession(c *gin.Context) {
 
 func SetUserId(c *gin.Context) {
 	userId := uuid.New().String()
-	c.SetCookie("userId", userId, 3600 /* age */, "/" /* valid for all paths */, "localhost", false /* HTTPS only */, true)
+	c.SetCookie("userId", userId, 3600 /* age */, "/" /* valid for all paths */, "localhost", false /* HTTPS only */, false)
 	c.JSON(http.StatusOK, userId)
 }
 
